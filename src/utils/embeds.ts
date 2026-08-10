@@ -110,8 +110,12 @@ export function createHelpEmbed(): EmbedBuilder {
     .setColor(EMBED_COLORS.info)
     .addFields(
       {
-        name: '\u{1F527} Protection',
+        name: '\u{1F527} Protection Setup',
         value: '`/setup` \u2014 Configure the protected anti-spam channel.',
+      },
+      {
+        name: '\u{1F9FA} Message Purging',
+        value: '`/remove user:@user` \u2014 Purge all messages from a target user sent in the last 20 minutes across all server channels.',
       },
       {
         name: '\u{2753} Help',
@@ -123,6 +127,32 @@ export function createHelpEmbed(): EmbedBuilder {
       }
     )
     .setFooter({ text: `Developed by ${DEVELOPER_NAME} \u2022 ${DEVELOPER_GITHUB}` })
+    .setTimestamp();
+}
+
+export function createRemoveSuccessEmbed(targetUserTag: string, targetUserId: string, deletedCount: number): EmbedBuilder {
+  return new EmbedBuilder()
+    .setTitle('\u{1F9FA} Recent Messages Purged')
+    .setDescription(`Successfully purged recent 20-minute messages for <@${targetUserId}> across all server channels.`)
+    .setColor(EMBED_COLORS.success)
+    .addFields(
+      {
+        name: '\u{1F464} Target User',
+        value: `${targetUserTag} (\`${targetUserId}\`)`,
+        inline: true,
+      },
+      {
+        name: '\u{1F5D1}\u{FE0F} Messages Deleted',
+        value: `**${deletedCount}** message${deletedCount === 1 ? '' : 's'}`,
+        inline: true,
+      },
+      {
+        name: '\u{23F1}\u{FE0F} Time Window',
+        value: 'Last 20 minutes',
+        inline: true,
+      }
+    )
+    .setFooter({ text: BOT_NAME })
     .setTimestamp();
 }
 

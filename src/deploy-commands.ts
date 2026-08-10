@@ -1,11 +1,13 @@
 import { REST, Routes } from 'discord.js';
 import { config } from './config/environment';
 import { data as setupData } from './commands/setup';
+import { data as removeData } from './commands/remove';
 import { data as helpData } from './commands/help';
 import { LoggingService } from './services/loggingService';
 
 const commands = [
   setupData.toJSON(),
+  removeData.toJSON(),
   helpData.toJSON()
 ];
 
