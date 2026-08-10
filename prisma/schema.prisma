@@ -1,0 +1,29 @@
+// ============================================
+// Spam Tracker - Prisma Schema
+// ============================================
+// To switch to PostgreSQL:
+//   1. Change provider to "postgresql"
+//   2. Update DATABASE_URL in .env
+//   3. Run: npx prisma migrate dev
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model GuildConfig {
+  id                 String   @id @default(cuid())
+  guildId            String   @unique
+  protectedChannelId String?
+  enabled            Boolean  @default(true)
+  logChannelId       String?
+  moderationEnabled  Boolean  @default(true)
+  timeoutDuration    Int      @default(7200000)  // 2 hours in ms
+  cleanupWindow      Int      @default(1200000)  // 20 minutes in ms
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
