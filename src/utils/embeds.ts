@@ -25,6 +25,10 @@ export function createWelcomeEmbed(): EmbedBuilder {
         ].join('\n'),
       },
       {
+        name: '\u{1F4E4} Important Role Hierarchy Tip',
+        value: 'Please place the **Spam Tracker** bot role **above regular server members** and **below staff/admin roles** in **Server Settings > Roles** so it can successfully issue timeouts to spammers.',
+      },
+      {
         name: '\u{1F468}\u200D\u{1F4BB} Developer',
         value: `[${DEVELOPER_NAME}](${DEVELOPER_GITHUB})`,
       }
@@ -69,7 +73,7 @@ export function createSetupSuccessEmbed(channelId: string): EmbedBuilder {
       },
       {
         name: '\u{1F4E4} Important Role Setup Tip',
-        value: 'Make sure the **Spam Tracker** bot role is placed **above regular member roles** in **Server Settings > Roles** (below Admins/Mods, but above members) so the bot has authority to timeout spammers.',
+        value: 'Make sure to place the **Spam Tracker** bot role **above regular server members** and **below staff/admin roles** in **Server Settings > Roles** so the bot has authority to timeout spammers.',
       }
     )
     .setFooter({ text: BOT_NAME })
@@ -82,7 +86,7 @@ export function createAlreadySetupEmbed(channelId: string): EmbedBuilder {
     .setDescription(
       `This server already has protection configured.\n\n` +
       `Protected channel: <#${channelId}>\n\n` +
-      `💡 **Role Setup Tip:** Keep the bot role placed **above regular member roles** in Server Settings > Roles.`
+      `💡 **Role Setup Tip:** Keep the **Spam Tracker** bot role **above regular server members** and **below staff roles** in Server Settings > Roles.`
     )
     .setColor(EMBED_COLORS.info)
     .setTimestamp();
@@ -120,7 +124,7 @@ export function createHelpEmbed(): EmbedBuilder {
       },
       {
         name: '\u{1F4E4} Setup Tip: Role Hierarchy',
-        value: 'Position the **Spam Tracker** bot role **above regular member roles** in **Server Settings > Roles** so it can successfully issue 2-hour timeouts to offending spammers.',
+        value: 'Place the **Spam Tracker** bot role **above regular server members** and **below staff/moderator roles** in **Server Settings > Roles** so it can successfully issue 2-hour timeouts to spammers.',
       }
     )
     .setFooter({ text: `Developed by ${DEVELOPER_NAME} \u2022 ${DEVELOPER_GITHUB}` })
