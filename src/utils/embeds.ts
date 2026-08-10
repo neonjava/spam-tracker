@@ -35,26 +35,11 @@ export function createWelcomeEmbed(): EmbedBuilder {
 
 export function createProtectionEmbed(): EmbedBuilder {
   const description = [
-    '**This channel is monitored for spam bots, hacked accounts, and other malicious activity.**',
+    '🚫 **DO NOT MESSAGE OR UPLOAD MEDIA HERE**',
     '',
-    '\u{274C} **DO NOT:**',
-    '\u2022 Send messages.',
-    '\u2022 Test if you can talk here.',
-    '\u2022 Reply to messages in this channel.',
+    'If you send any message or upload files in this channel, you will be **automatically timed out for 2 hours** and your recent messages across the server will be deleted.',
     '',
-    '\u{26A0}\u{FE0F} **What happens if you post?**',
-    '',
-    'Any account that sends a message here may be immediately restricted.',
-    '',
-    'Messages sent in this channel may result in an automatic **2-hour timeout**.',
-    '',
-    'Recent messages from the offending account may also be removed from the server.',
-    '',
-    '**Appeals** for automated actions should be handled through the server\'s normal moderation/support process.',
-    '',
-    'If you\'re a legitimate member and need help, contact a staff member through the appropriate support channels instead.',
-    '',
-    '> **If you\'re reading this, leave this channel without sending anything.**',
+    'If you are reading this, leave this channel immediately without sending anything.',
   ].join('\n');
 
   return new EmbedBuilder()
@@ -78,11 +63,15 @@ export function createSetupSuccessEmbed(channelId: string): EmbedBuilder {
       {
         name: '\u{26A0}\u{FE0F} What Happens',
         value: [
-          'Members who attempt to send messages there may be:',
+          'Members who attempt to send messages there will be:',
           '\u2022 Message deleted',
           '\u2022 Timed out for **2 hours**',
-          '\u2022 Recent messages removed from the server',
+          '\u2022 Recent 20-min messages removed from the server',
         ].join('\n'),
+      },
+      {
+        name: '\u{1F4E4} Important Role Setup Tip',
+        value: 'Make sure the **Spam Tracker** bot role is placed **above regular member roles** in **Server Settings > Roles** (below Admins/Mods, but above members) so the bot has authority to timeout spammers.',
       }
     )
     .setFooter({ text: BOT_NAME })
@@ -94,7 +83,8 @@ export function createAlreadySetupEmbed(channelId: string): EmbedBuilder {
     .setTitle('\u{1F6E1}\u{FE0F} Protection Already Configured')
     .setDescription(
       `This server already has protection configured.\n\n` +
-      `Protected channel: <#${channelId}>`
+      `Protected channel: <#${channelId}>\n\n` +
+      `💡 **Role Setup Tip:** Keep the bot role placed **above regular member roles** in Server Settings > Roles.`
     )
     .setColor(EMBED_COLORS.info)
     .setTimestamp();
@@ -129,6 +119,10 @@ export function createHelpEmbed(): EmbedBuilder {
       {
         name: '\u{2753} Help',
         value: '`/help` \u2014 Show available commands.',
+      },
+      {
+        name: '\u{1F4E4} Setup Tip: Role Hierarchy',
+        value: 'Position the **Spam Tracker** bot role **above regular member roles** in **Server Settings > Roles** so it can successfully issue 2-hour timeouts to offending spammers.',
       }
     )
     .setFooter({ text: `Developed by ${DEVELOPER_NAME} \u2022 ${DEVELOPER_GITHUB}` })
