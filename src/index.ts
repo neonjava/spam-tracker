@@ -7,6 +7,8 @@ import { ProtectionService } from './services/protectionService';
 import { LoggingService } from './services/loggingService';
 import { createErrorEmbed } from './utils/embeds';
 
+import { startDashboardServer } from './dashboard/dashboardServer';
+
 import * as setupCommand from './commands/setup';
 import * as voteCommand from './commands/vote';
 import * as helpCommand from './commands/help';
@@ -34,6 +36,9 @@ async function main() {
 
   const messageTracker = new MessageTracker();
   messageTracker.startCleanupInterval();
+
+  // Start Web Admin Control Panel & Console
+  startDashboardServer(client, messageTracker);
 
   const moderationService = new ModerationService(messageTracker);
   const protectionService = new ProtectionService(messageTracker, moderationService);

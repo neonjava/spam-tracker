@@ -6,6 +6,8 @@ export interface AppConfig {
   discordToken: string;
   clientId: string;
   databaseUrl: string;
+  dashboardPort: number;
+  adminPassword: string;
   topggVoteUrl: string | undefined;
   discordbotlistVoteUrl: string | undefined;
   botservicesVoteUrl: string | undefined;
@@ -33,6 +35,8 @@ function loadConfig(): AppConfig {
     discordToken: discordToken!,
     clientId: clientId!,
     databaseUrl: databaseUrl!,
+    dashboardPort: parseInt(process.env.DASHBOARD_PORT || '3001', 10),
+    adminPassword: process.env.ADMIN_PASSWORD || 'REDACTED_DASHBOARD_PASSWORD',
     topggVoteUrl: process.env.TOPGG_VOTE_URL || undefined,
     discordbotlistVoteUrl: process.env.DISCORDBOTLIST_VOTE_URL || undefined,
     botservicesVoteUrl: process.env.BOTSERVICES_VOTE_URL || undefined,
