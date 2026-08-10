@@ -28,7 +28,6 @@ export function checkBotPermissions(guild: Guild): PermissionCheckResult {
 
   for (const permission of REQUIRED_BOT_PERMISSIONS) {
     if (!botPermissions.has(permission)) {
-      // Find the name of the missing permission
       const permName = Object.keys(PermissionFlagsBits).find(
         (key) => PermissionFlagsBits[key as keyof typeof PermissionFlagsBits] === permission
       ) || 'Unknown';
@@ -40,6 +39,30 @@ export function checkBotPermissions(guild: Guild): PermissionCheckResult {
     hasAll: missing.length === 0,
     missing
   };
+}
+
+export async function checkBotPermissionsAsync(guild: Guild): Promise<PermissionCheckResult> {
+  try {
+    const botMember = await guild.members.fetchMe();
+    const missing: string[] = [];
+    const botPermissions = botMember.permissions;
+
+    for (const permission of REQUIRED_BOT_PERMISSIONS) {
+      if (!botPermissions.has(permission)) {
+        const permName = Object.keys(PermissionFlagsBits).find(
+          (key) => PermissionFlagsBits[key as keyof typeof PermissionFlagsBits] === permission
+        ) || 'Unknown';
+        missing.push(permName);
+      }
+    }
+
+    return {
+      hasAll: missing.length === 0,
+      missing
+    };
+  } catch (error) {
+    return checkBotPermissions(guild);
+  }
 }
 
 export interface ModerationEligibility {

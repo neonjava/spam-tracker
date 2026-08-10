@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, PermissionFlagsBits, ChannelType, EmbedBuilder } from 'discord.js';
-import { checkBotPermissions } from '../utils/permissions';
+import { checkBotPermissions, checkBotPermissionsAsync } from '../utils/permissions';
 import { GuildConfigService } from '../services/guildConfigService';
 import { PROTECTION_CHANNEL_NAME } from '../utils/constants';
 import { createMissingPermissionsEmbed, createAlreadySetupEmbed, createProtectionEmbed, createSetupSuccessEmbed, createErrorEmbed } from '../utils/embeds';
@@ -19,7 +19,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
       return;
     }
 
-    const permissionCheck = checkBotPermissions(interaction.guild);
+    const permissionCheck = await checkBotPermissionsAsync(interaction.guild);
     if (!permissionCheck.hasAll) {
       await interaction.editReply({ embeds: [createMissingPermissionsEmbed(permissionCheck.missing)] });
       return;
@@ -37,6 +37,8 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         // Channel might have been deleted, continue to create a new one
       }
     }
+
+    const botMember = await interaction.guild.members.fetchMe();
 
     const channel = await interaction.guild.channels.create({
       name: PROTECTION_CHANNEL_NAME,
@@ -58,7 +60,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
           ],
         },
         {
-          id: interaction.guild.members.me!.id,
+          id: botMember.id,
           allow: [
             PermissionFlagsBits.ViewChannel,
             PermissionFlagsBits.SendMessages,
@@ -80,10 +82,16 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   } catch (error: any) {
     LoggingService.logError('SetupCommand', 'Error executing setup command', error);
     try {
+      let errorMessage = 'An error occurred during setup.';
+      if (error.code === 50013 || error.message?.includes('Missing Permissions')) {
+        errorMessage = 'The bot lacks **Manage Channels** or **Manage Roles** permission in this server to create the protected channel. Please update the bot\'s role permissions in **Server Settings > Roles** and try again.';
+      }
+      const errorEmbed = createErrorEmbed(errorMessage);
+
       if (interaction.deferred) {
-        await interaction.editReply({ embeds: [createErrorEmbed('An error occurred during setup.')] });
+        await interaction.editReply({ embeds: [errorEmbed] });
       } else {
-        await interaction.reply({ embeds: [createErrorEmbed('An error occurred during setup.')], ephemeral: true });
+        await interaction.reply({ embeds: [errorEmbed], ephemeral: true });
       }
     } catch (e) {
        // Ignore fallback errors
