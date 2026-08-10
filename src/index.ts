@@ -10,7 +10,6 @@ import { createErrorEmbed } from './utils/embeds';
 import { startDashboardServer } from './dashboard/dashboardServer';
 
 import * as setupCommand from './commands/setup';
-import * as voteCommand from './commands/vote';
 import * as helpCommand from './commands/help';
 
 import * as readyEvent from './events/ready';
@@ -45,7 +44,6 @@ async function main() {
 
   client.commands = new Collection();
   client.commands.set(setupCommand.data.name, setupCommand);
-  client.commands.set(voteCommand.data.name, voteCommand);
   client.commands.set(helpCommand.data.name, helpCommand);
 
   client.once(readyEvent.name, (...args) => readyEvent.execute(...args));

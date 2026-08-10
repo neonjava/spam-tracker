@@ -20,7 +20,6 @@ export function createWelcomeEmbed(): EmbedBuilder {
         name: '\u{1F4CB} Useful Commands',
         value: [
           '`/setup` \u2014 Configure protection',
-          '`/vote` \u2014 Vote for the bot',
           '`/help` \u2014 View commands',
         ].join('\n'),
       },
@@ -113,10 +112,6 @@ export function createHelpEmbed(): EmbedBuilder {
       {
         name: '\u{1F527} Protection',
         value: '`/setup` \u2014 Configure the protected anti-spam channel.',
-      },
-      {
-        name: '\u{1F5F3}\u{FE0F} Support',
-        value: '`/vote` \u2014 Vote for the bot.',
       },
       {
         name: '\u{2753} Help',
