@@ -1,5 +1,4 @@
 import express, { Request, Response, NextFunction } from 'express';
-import http from 'http';
 import fs from 'fs';
 import path from 'path';
 import { exec } from 'child_process';
@@ -13,10 +12,20 @@ export function startDashboardServer(client: Client, messageTracker: MessageTrac
   const app = express();
   app.use(express.json());
 
-  // In-memory token storage for active sessions
+  // Enable CORS headers
+  app.use((_req: Request, res: Response, next: NextFunction) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    if (_req.method === 'OPTIONS') {
+      return res.sendStatus(200);
+    }
+    next();
+  });
+
+  // Active auth tokens
   const activeTokens = new Set<string>();
 
-  // Simple token generation
   const createToken = () => `st_auth_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
   // Auth Middleware
@@ -43,7 +52,7 @@ export function startDashboardServer(client: Client, messageTracker: MessageTrac
     return res.status(401).json({ success: false, error: 'Incorrect Admin Password' });
   });
 
-  // Check Session
+  // Check Auth Token
   app.get('/api/auth/check', requireAuth, (_req: Request, res: Response) => {
     res.json({ valid: true });
   });
@@ -290,7 +299,6 @@ function getDashboardHTML(): string {
       flex-direction: column;
       overflow-x: hidden;
     }
-    /* Liquid Glow Background */
     .glow-bg {
       position: fixed;
       top: -20%; left: 30%;
@@ -351,7 +359,7 @@ function getDashboardHTML(): string {
       border-radius: 20px; padding: 1.5rem; backdrop-filter: blur(12px);
     }
     .stat-val { font-size: 2rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: white; margin: 0.5rem 0 0.25rem 0; }
-    .stat-lbl { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; tracking: 0.05em; color: var(--text-muted); }
+    .stat-lbl { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
     
     /* Console Terminal */
     .terminal-window {
@@ -415,11 +423,11 @@ function getDashboardHTML(): string {
     </a>
 
     <div class="nav-tabs">
-      <button class="nav-tab active" onclick="switchTab('overview')">📊 Overview</button>
-      <button class="nav-tab" onclick="switchTab('console')">💻 Live Console</button>
-      <button class="nav-tab" onclick="switchTab('controls')">🎮 Bot Controls</button>
-      <button class="nav-tab" onclick="switchTab('files')">📁 File Manager</button>
-      <button class="nav-tab" onclick="switchTab('guilds')">📜 Guilds</button>
+      <button class="nav-tab active" onclick="switchTab('overview', this)">📊 Overview</button>
+      <button class="nav-tab" onclick="switchTab('console', this)">💻 Live Console</button>
+      <button class="nav-tab" onclick="switchTab('controls', this)">🎮 Bot Controls</button>
+      <button class="nav-tab" onclick="switchTab('files', this)">📁 File Manager</button>
+      <button class="nav-tab" onclick="switchTab('guilds', this)">📜 Guilds</button>
     </div>
 
     <div>
@@ -455,7 +463,7 @@ function getDashboardHTML(): string {
 
       <div class="card" style="margin-top: 1rem;">
         <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">System Overview</h3>
-        <p style="color: var(--text-muted); font-size: 0.9rem; leading-height: 1.6;">
+        <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">
           Spam Tracker is running on process ID <code>spam-tracker</code> via PM2. The live system automatically monitors protected honeypot channels across all servers and purges recent spam activity. Use the Live Console tab to view real-time log outputs or Bot Controls to restart services.
         </p>
       </div>
@@ -522,7 +530,16 @@ function getDashboardHTML(): string {
     let currentEditingPath = '';
 
     async function login() {
-      const password = document.getElementById('adminPasswordInput').value;
+      const passwordInput = document.getElementById('adminPasswordInput');
+      const password = passwordInput ? passwordInput.value.trim() : '';
+      const errDiv = document.getElementById('loginError');
+      if (errDiv) errDiv.innerText = '';
+
+      if (!password) {
+        if (errDiv) errDiv.innerText = 'Please enter admin password';
+        return;
+      }
+
       try {
         const res = await fetch('/api/login', {
           method: 'POST',
@@ -530,16 +547,16 @@ function getDashboardHTML(): string {
           body: JSON.stringify({ password })
         });
         const data = await res.json();
-        if (data.success) {
+        if (data.success && data.token) {
           authToken = data.token;
           localStorage.setItem('st_admin_token', authToken);
           document.getElementById('loginModal').style.display = 'none';
-          initDashboard();
+          loadDashboardData();
         } else {
-          document.getElementById('loginError').innerText = data.error || 'Authentication failed';
+          if (errDiv) errDiv.innerText = data.error || 'Incorrect Password';
         }
       } catch (e) {
-        document.getElementById('loginError').innerText = 'Server error during login';
+        if (errDiv) errDiv.innerText = 'Connection error: ' + e.message;
       }
     }
 
@@ -556,28 +573,36 @@ function getDashboardHTML(): string {
     }
 
     async function initDashboard() {
-      const authed = await checkAuth();
-      if (!authed) {
-        document.getElementById('loginModal').style.display = 'flex';
-        return;
+      if (authToken) {
+        const authed = await checkAuth();
+        if (authed) {
+          document.getElementById('loginModal').style.display = 'none';
+          loadDashboardData();
+          return;
+        }
       }
-      document.getElementById('loginModal').style.display = 'none';
+      document.getElementById('loginModal').style.display = 'flex';
+    }
 
+    function loadDashboardData() {
       fetchStats();
       fetchLogs();
       fetchFileTree();
       fetchGuilds();
 
-      setInterval(fetchStats, 5000);
-      setInterval(fetchLogs, 4000);
+      if (!window.statsInterval) {
+        window.statsInterval = setInterval(fetchStats, 4000);
+        window.logsInterval = setInterval(fetchLogs, 3000);
+      }
     }
 
-    function switchTab(tabId) {
+    function switchTab(tabId, btnEl) {
       document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       
-      event.target.classList.add('active');
-      document.getElementById('tab-' + tabId).classList.add('active');
+      if (btnEl) btnEl.classList.add('active');
+      const target = document.getElementById('tab-' + tabId);
+      if (target) target.classList.add('active');
     }
 
     async function fetchStats() {
