@@ -12,10 +12,12 @@
 - 🔒 Principle of least privilege
 
 ## How It Works
-The bot uses a honeypot channel strategy: `/setup` creates a dedicated channel (`dont-text-or-msg-here`) where normal members cannot type. Any spam bots or raiders that attempt to send messages there trigger an immediate:
+The bot uses a honeypot channel strategy: `/setup` creates a dedicated channel (`dont-text-or-msg-here`) configured with View Channel, Send Messages, and Read Message History permissions for `@everyone`. Any spam bots or raiders that attempt to send messages or upload media there trigger an immediate:
 1. Message deletion
 2. 2-hour automated timeout
 3. Mass cleanup of their recent messages (last 20 minutes) across all channels
+
+> 💡 **Role Hierarchy Setup Tip:** In **Server Settings > Roles**, place the **Spam Tracker** bot role **above regular member roles** (below Admins/Mods, but above normal members). Discord requires a bot's highest role to be higher than the target member's highest role to issue timeouts.
 
 ## Commands
 | Command | Description | Permission |
