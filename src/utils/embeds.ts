@@ -205,6 +205,41 @@ export function createVoteEmbed(): { embed: EmbedBuilder; row: ActionRowBuilder<
   return { embed, row };
 }
 
+export function createTimeoutDMEmbed(guildName: string): EmbedBuilder {
+  return new EmbedBuilder()
+    .setTitle('\u{26A0}\u{FE0F} You have been timed out')
+    .setDescription(
+      `You have been timed out for **2 hours** in **${guildName}** because a message, image, GIF, or file was sent from your account in a protected anti-spam channel.\n\n` +
+      `⚠️ **Your account might be compromised or hacked!**\n` +
+      `Automated spam bots often compromise Discord accounts to flood servers with malicious links, crypto scams, or fake giveaway screenshots.\n\n` +
+      `If you are sure your account is secure (you have updated your password & enabled 2FA), click the **Remove Timeout** button below to remove your timeout immediately.`
+    )
+    .setColor(EMBED_COLORS.warning)
+    .setFooter({ text: BOT_NAME })
+    .setTimestamp();
+}
+
+export function createTimeoutDMRow(guildId: string, userId: string): ActionRowBuilder<ButtonBuilder> {
+  const button = new ButtonBuilder()
+    .setCustomId(`untimeout_${guildId}_${userId}`)
+    .setLabel('\u{1F503} Remove Timeout')
+    .setStyle(ButtonStyle.Success);
+
+  return new ActionRowBuilder<ButtonBuilder>().addComponents(button);
+}
+
+export function createTimeoutRemovedDMEmbed(guildName: string): EmbedBuilder {
+  return new EmbedBuilder()
+    .setTitle('\u{2705} Timeout Removed')
+    .setDescription(
+      `Your timeout in **${guildName}** has been successfully removed!\n\n` +
+      `Please ensure your account security (password & 2FA enabled) remains up to date so your account is not compromised again.`
+    )
+    .setColor(EMBED_COLORS.success)
+    .setFooter({ text: BOT_NAME })
+    .setTimestamp();
+}
+
 export function createErrorEmbed(message: string): EmbedBuilder {
   return new EmbedBuilder()
     .setTitle('\u{274C} Error')

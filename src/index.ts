@@ -5,7 +5,7 @@ import { MessageTracker } from './services/messageTracker';
 import { ModerationService } from './services/moderationService';
 import { ProtectionService } from './services/protectionService';
 import { LoggingService } from './services/loggingService';
-import { createErrorEmbed } from './utils/embeds';
+import { createErrorEmbed, createTimeoutRemovedDMEmbed } from './utils/embeds';
 
 import { startDashboardServer } from './dashboard/dashboardServer';
 
@@ -59,6 +59,46 @@ async function main() {
   client.on(messageCreateEvent.name, messageCreateHandler);
 
   client.on('interactionCreate', async interaction => {
+    // Handle Untimeout Self-Appeal Button Interactions
+    if (interaction.isButton() && interaction.customId.startsWith('untimeout_')) {
+      try {
+        const parts = interaction.customId.split('_');
+        const guildId = parts[1];
+        const targetUserId = parts[2];
+
+        const targetGuild = client.guilds.cache.get(guildId);
+        if (!targetGuild) {
+          await interaction.reply({ content: '❌ The server associated with this timeout is no longer accessible.', ephemeral: true });
+          return;
+        }
+
+        const member = await targetGuild.members.fetch(targetUserId).catch(() => null);
+        if (!member) {
+          await interaction.reply({ content: '❌ Could not find your member profile in the server.', ephemeral: true });
+          return;
+        }
+
+        if (!member.isCommunicationDisabled()) {
+          const removedEmbed = createTimeoutRemovedDMEmbed(targetGuild.name);
+          await interaction.update({ embeds: [removedEmbed], components: [] });
+          return;
+        }
+
+        // Remove timeout
+        await member.timeout(null, 'User self-appeal: un-timed out via security confirmation button');
+        LoggingService.logInfo(`Removed timeout for ${member.user.tag} in ${targetGuild.name} via DM appeal button`);
+
+        const removedEmbed = createTimeoutRemovedDMEmbed(targetGuild.name);
+        await interaction.update({ embeds: [removedEmbed], components: [] });
+      } catch (err: any) {
+        LoggingService.logError('UntimeoutButton', 'Failed to process untimeout appeal button', err);
+        try {
+          await interaction.reply({ content: '❌ An error occurred while removing your timeout. Please contact server moderators.', ephemeral: true });
+        } catch (e) {}
+      }
+      return;
+    }
+
     if (!interaction.isChatInputCommand()) return;
 
     const command = client.commands.get(interaction.commandName);

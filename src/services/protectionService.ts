@@ -3,6 +3,7 @@ import { ModerationService } from './moderationService';
 import { MessageTracker } from './messageTracker';
 import { LoggingService } from './loggingService';
 import { TIMEOUT_DURATION_MS } from '../utils/constants';
+import { createTimeoutDMEmbed, createTimeoutDMRow } from '../utils/embeds';
 
 export class ProtectionService {
   private moderationService: ModerationService;
@@ -72,7 +73,19 @@ export class ProtectionService {
         message.channel.id
       );
 
-      // c. Log the action
+      // c. Send DM appeal notification to user
+      if (timedOut && typeof member.send === 'function') {
+        try {
+          const dmEmbed = createTimeoutDMEmbed(guild.name);
+          const dmRow = createTimeoutDMRow(guild.id, userId);
+          await member.send({ embeds: [dmEmbed], components: [dmRow] });
+          LoggingService.logInfo(`Sent timeout DM appeal button to ${member.user?.tag || userId}`);
+        } catch (dmErr) {
+          LoggingService.logWarning(`Could not send DM to ${member.user?.tag || userId}: User DMs may be disabled`);
+        }
+      }
+
+      // d. Log the action
       LoggingService.logProtection({
         guildId,
         guildName: guild.name,
