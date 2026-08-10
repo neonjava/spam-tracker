@@ -35,15 +35,13 @@ export function createWelcomeEmbed(): EmbedBuilder {
 
 export function createProtectionEmbed(): EmbedBuilder {
   const description = [
-    '🚫 **DO NOT MESSAGE OR UPLOAD MEDIA HERE**',
+    'This channel is monitored for automated spam bots and malicious accounts.',
     '',
-    'If you send any message or upload files in this channel, you will be **automatically timed out for 2 hours** and your recent messages across the server will be deleted.',
-    '',
-    'If you are reading this, leave this channel immediately without sending anything.',
+    'Sending any message, image, GIF, or file will trigger automatic moderation, including a 2-hour timeout and deletion of recent messages.',
   ].join('\n');
 
   return new EmbedBuilder()
-    .setTitle('\u{1F6AB} DO NOT POST HERE')
+    .setTitle('DO NOT MESSAGE OR UPLOAD HERE')
     .setDescription(description)
     .setColor(EMBED_COLORS.protection)
     .setFooter({ text: `Protected by ${BOT_NAME}` })

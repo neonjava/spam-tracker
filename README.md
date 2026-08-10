@@ -12,7 +12,7 @@
 - 🔒 Principle of least privilege
 
 ## How It Works
-The bot uses a honeypot channel strategy: `/setup` creates a dedicated channel (`dont-text-or-msg-here`) configured with View Channel, Send Messages, and Read Message History permissions for `@everyone`. Any spam bots or raiders that attempt to send messages or upload media there trigger an immediate:
+The bot uses a honeypot channel strategy: `/setup` creates a dedicated channel (`dont-msg-or-upload-here`) configured with View Channel, Send Messages, and Read Message History permissions for `@everyone`. Any spam bots or raiders that attempt to send messages or upload media there trigger an immediate:
 1. Message deletion
 2. 2-hour automated timeout
 3. Mass cleanup of their recent messages (last 20 minutes) across all channels
@@ -59,7 +59,7 @@ The bot uses a honeypot channel strategy: `/setup` creates a dedicated channel (
 - **Embed Links**: To format security embeds nicely.
 - **Read Message History**: To fetch messages during recent 20-minute cleanup.
 - **Manage Messages**: To delete triggering spam messages and clean up user history.
-- **Manage Channels**: To create and configure the `dont-text-or-msg-here` channel during `/setup`.
+- **Manage Channels**: To create and configure the `dont-msg-or-upload-here` channel during `/setup`.
 - **Moderate Members**: To apply the 2-hour timeout to spammers.
 
 **OAuth2 Permission Integer:** `1099511719936`

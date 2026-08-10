@@ -1,5 +1,5 @@
 /** Name of the protected honeypot channel */
-export const PROTECTION_CHANNEL_NAME = 'dont-text-or-msg-here';
+export const PROTECTION_CHANNEL_NAME = 'dont-msg-or-upload-here';
 
 /** Timeout duration: 2 hours in milliseconds */
 export const TIMEOUT_DURATION_MS = 2 * 60 * 60 * 1000;
