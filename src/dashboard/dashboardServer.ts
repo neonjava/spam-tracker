@@ -681,11 +681,17 @@ function getDashboardHTML(): string {
         if (node.isDir) {
           html += '<li style="margin: 0.2rem 0;">📁 <strong>' + node.name + '</strong>' + renderTree(node.children) + '</li>';
         } else {
-          html += '<li class="file-item" onclick="openFile(\'' + node.path + '\')">📄 ' + node.name + '</li>';
+          const safePath = encodeURIComponent(node.path);
+          html += '<li class="file-item" data-path="' + safePath + '" onclick="onFileClick(this)">📄 ' + node.name + '</li>';
         }
       });
       html += '</ul>';
       return html;
+    }
+
+    function onFileClick(el) {
+      const path = decodeURIComponent(el.getAttribute('data-path'));
+      openFile(path);
     }
 
     async function openFile(filePath) {
