@@ -7,6 +7,6 @@ export const once = true;
 
 export function execute(client: Client<true>): void {
   LoggingService.logInfo('ReadyEvent', `Bot is online as ${client.user.tag}`);
-  PresenceService.updatePresence(client);
+  PresenceService.startPresenceInterval(client);
   LoggingService.logInfo('ReadyEvent', `Serving ${client.guilds.cache.size} guilds`);
 }
