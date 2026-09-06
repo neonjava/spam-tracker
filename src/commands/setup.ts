@@ -12,7 +12,7 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
   try {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply();
 
     if (!interaction.guild) {
       await interaction.editReply('This command can only be used in a server.');
@@ -93,7 +93,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
       if (interaction.deferred) {
         await interaction.editReply({ embeds: [errorEmbed] });
       } else {
-        await interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+        await interaction.reply({ embeds: [errorEmbed] });
       }
     } catch (e) {
        // Ignore fallback errors

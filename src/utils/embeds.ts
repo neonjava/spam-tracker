@@ -104,8 +104,8 @@ export function createSetupSuccessEmbed(channelId: string): EmbedBuilder {
         ].join('\n'),
       },
       {
-        name: '\u{1F4E4} Important Role Setup Tip',
-        value: 'Make sure to place the **Spam Tracker** bot role **above regular server members** and **below staff/admin roles** in **Server Settings > Roles** so the bot has authority to timeout spammers.',
+        name: '**📤 Important Role Setup Tip**',
+        value: '> **Make sure to place the `Spam Tracker` bot role above regular server members and below staff/admin roles in `Server Settings > Roles` so the bot has authority to timeout spammers.**',
       }
     )
     .setFooter({ text: BOT_NAME })
@@ -118,7 +118,8 @@ export function createAlreadySetupEmbed(channelId: string): EmbedBuilder {
     .setDescription(
       `This server already has protection configured.\n\n` +
       `Protected channel: <#${channelId}>\n\n` +
-      `💡 **Role Setup Tip:** Keep the **Spam Tracker** bot role **above regular server members** and **below staff roles** in Server Settings > Roles.`
+      `> **📤 Important Role Setup Tip:**\n` +
+      `> **Make sure to place the \`Spam Tracker\` bot role above regular server members and below staff/admin roles in \`Server Settings > Roles\` so the bot has authority to timeout spammers.**`
     )
     .setColor(EMBED_COLORS.info)
     .setTimestamp();
