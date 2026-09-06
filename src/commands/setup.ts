@@ -2,7 +2,7 @@ import { SlashCommandBuilder, ChatInputCommandInteraction, PermissionFlagsBits, 
 import { checkBotPermissions, checkBotPermissionsAsync } from '../utils/permissions';
 import { GuildConfigService } from '../services/guildConfigService';
 import { PROTECTION_CHANNEL_NAME } from '../utils/constants';
-import { createMissingPermissionsEmbed, createAlreadySetupEmbed, createProtectionEmbed, createSetupSuccessEmbed, createErrorEmbed } from '../utils/embeds';
+import { createMissingPermissionsEmbed, createAlreadySetupEmbed, createProtectionEmbed, createSetupSuccessEmbed, createErrorEmbed, getSpamWarningAttachment } from '../utils/embeds';
 import { LoggingService } from '../services/loggingService';
 
 export const data = new SlashCommandBuilder()
@@ -74,7 +74,9 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
       reason: 'Spam Tracker protection channel',
     });
 
-    await channel.send({ embeds: [createProtectionEmbed()] });
+    const localImage = getSpamWarningAttachment();
+    const files = localImage ? [localImage.attachment] : [];
+    await channel.send({ embeds: [createProtectionEmbed()], files });
 
     await GuildConfigService.upsertConfig(interaction.guild.id, { protectedChannelId: channel.id });
 

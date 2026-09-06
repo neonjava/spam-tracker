@@ -1,6 +1,27 @@
-import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
+import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, AttachmentBuilder } from 'discord.js';
+import path from 'path';
+import fs from 'fs';
 import { EMBED_COLORS, BOT_NAME, DEVELOPER_NAME, DEVELOPER_GITHUB, SPAM_EXAMPLES_IMAGE_URL } from './constants';
 import { config } from '../config/environment';
+
+export function getSpamWarningAttachment(): { attachment: AttachmentBuilder; attachmentName: string } | null {
+  const candidates = [
+    path.resolve(__dirname, '../../assets/image.gif'),
+    path.resolve(__dirname, '../assets/image.gif'),
+    path.resolve(process.cwd(), 'assets/image.gif'),
+    path.resolve(__dirname, '../../assets/spam-examples.png'),
+    path.resolve(__dirname, '../assets/spam-examples.png'),
+    path.resolve(process.cwd(), 'assets/spam-examples.png'),
+  ];
+  const found = candidates.find(p => fs.existsSync(p));
+  if (found) {
+    return {
+      attachment: new AttachmentBuilder(found, { name: 'warning.png' }),
+      attachmentName: 'attachment://warning.png'
+    };
+  }
+  return null;
+}
 
 export function createWelcomeEmbed(): EmbedBuilder {
   return new EmbedBuilder()
@@ -43,13 +64,21 @@ export function createProtectionEmbed(): EmbedBuilder {
     'Sending any message, image, GIF, or file will trigger automatic moderation, including a 2-hour timeout and deletion of recent messages.',
   ].join('\n');
 
-  return new EmbedBuilder()
+  const embed = new EmbedBuilder()
     .setTitle('🚫 DO NOT MESSAGE OR UPLOAD HERE')
     .setDescription(description)
-    .setImage(SPAM_EXAMPLES_IMAGE_URL)
     .setColor(EMBED_COLORS.protection)
     .setFooter({ text: `Protected by ${BOT_NAME}` })
     .setTimestamp();
+
+  const localImage = getSpamWarningAttachment();
+  if (localImage) {
+    embed.setImage(localImage.attachmentName);
+  } else {
+    embed.setImage(SPAM_EXAMPLES_IMAGE_URL);
+  }
+
+  return embed;
 }
 
 export function createSetupSuccessEmbed(channelId: string): EmbedBuilder {
@@ -207,7 +236,7 @@ export function createVoteEmbed(): { embed: EmbedBuilder; row: ActionRowBuilder<
 }
 
 export function createTimeoutDMEmbed(guildName: string): EmbedBuilder {
-  return new EmbedBuilder()
+  const embed = new EmbedBuilder()
     .setTitle('\u{26A0}\u{FE0F} You have been timed out')
     .setDescription(
       `You have been timed out for **2 hours** in **${guildName}** because a message, image, GIF, or file was sent from your account in a protected anti-spam channel.\n\n` +
@@ -215,10 +244,18 @@ export function createTimeoutDMEmbed(guildName: string): EmbedBuilder {
       `Automated spam bots often compromise Discord accounts to flood servers with malicious links, crypto scams, or fake giveaway screenshots.\n\n` +
       `If you are sure your account is secure (you have updated your password & enabled 2FA), click the **Remove Timeout** button below to remove your timeout immediately.`
     )
-    .setImage(SPAM_EXAMPLES_IMAGE_URL)
     .setColor(EMBED_COLORS.warning)
     .setFooter({ text: BOT_NAME })
     .setTimestamp();
+
+  const localImage = getSpamWarningAttachment();
+  if (localImage) {
+    embed.setImage(localImage.attachmentName);
+  } else {
+    embed.setImage(SPAM_EXAMPLES_IMAGE_URL);
+  }
+
+  return embed;
 }
 
 export function createTimeoutDMRow(guildId: string, userId: string): ActionRowBuilder<ButtonBuilder> {

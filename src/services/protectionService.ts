@@ -3,7 +3,7 @@ import { ModerationService } from './moderationService';
 import { MessageTracker } from './messageTracker';
 import { LoggingService } from './loggingService';
 import { TIMEOUT_DURATION_MS } from '../utils/constants';
-import { createTimeoutDMEmbed, createTimeoutDMRow } from '../utils/embeds';
+import { createTimeoutDMEmbed, createTimeoutDMRow, getSpamWarningAttachment } from '../utils/embeds';
 
 export class ProtectionService {
   private moderationService: ModerationService;
@@ -78,7 +78,9 @@ export class ProtectionService {
         try {
           const dmEmbed = createTimeoutDMEmbed(guild.name);
           const dmRow = createTimeoutDMRow(guild.id, userId);
-          await member.send({ embeds: [dmEmbed], components: [dmRow] });
+          const localImage = getSpamWarningAttachment();
+          const dmFiles = localImage ? [localImage.attachment] : [];
+          await member.send({ embeds: [dmEmbed], files: dmFiles, components: [dmRow] });
           LoggingService.logInfo(`Sent timeout DM appeal button to ${member.user?.tag || userId}`);
         } catch (dmErr) {
           LoggingService.logWarning(`Could not send DM to ${member.user?.tag || userId}: User DMs may be disabled`);
