@@ -29,3 +29,7 @@ export const EMBED_COLORS = {
 export const BOT_NAME = 'Spam Tracker';
 export const DEVELOPER_NAME = 'NeonJava';
 export const DEVELOPER_GITHUB = 'https://github.com/neonjava';
+
+/** URL for spam examples image displayed in embeds */
+export const SPAM_EXAMPLES_IMAGE_URL = 'https://neonjava.in/spam-examples.png';
+

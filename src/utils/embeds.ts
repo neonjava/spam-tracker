@@ -1,5 +1,5 @@
 import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
-import { EMBED_COLORS, BOT_NAME, DEVELOPER_NAME, DEVELOPER_GITHUB } from './constants';
+import { EMBED_COLORS, BOT_NAME, DEVELOPER_NAME, DEVELOPER_GITHUB, SPAM_EXAMPLES_IMAGE_URL } from './constants';
 import { config } from '../config/environment';
 
 export function createWelcomeEmbed(): EmbedBuilder {
@@ -44,8 +44,9 @@ export function createProtectionEmbed(): EmbedBuilder {
   ].join('\n');
 
   return new EmbedBuilder()
-    .setTitle('DO NOT MESSAGE OR UPLOAD HERE')
+    .setTitle('🚫 DO NOT MESSAGE OR UPLOAD HERE')
     .setDescription(description)
+    .setImage(SPAM_EXAMPLES_IMAGE_URL)
     .setColor(EMBED_COLORS.protection)
     .setFooter({ text: `Protected by ${BOT_NAME}` })
     .setTimestamp();
@@ -214,6 +215,7 @@ export function createTimeoutDMEmbed(guildName: string): EmbedBuilder {
       `Automated spam bots often compromise Discord accounts to flood servers with malicious links, crypto scams, or fake giveaway screenshots.\n\n` +
       `If you are sure your account is secure (you have updated your password & enabled 2FA), click the **Remove Timeout** button below to remove your timeout immediately.`
     )
+    .setImage(SPAM_EXAMPLES_IMAGE_URL)
     .setColor(EMBED_COLORS.warning)
     .setFooter({ text: BOT_NAME })
     .setTimestamp();
