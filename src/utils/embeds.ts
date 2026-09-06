@@ -6,6 +6,9 @@ import { config } from '../config/environment';
 
 export function getSpamWarningAttachment(): { attachment: AttachmentBuilder; attachmentName: string } | null {
   const candidates = [
+    path.resolve(__dirname, '../../assets/image.png'),
+    path.resolve(__dirname, '../assets/image.png'),
+    path.resolve(process.cwd(), 'assets/image.png'),
     path.resolve(__dirname, '../../assets/image.gif'),
     path.resolve(__dirname, '../assets/image.gif'),
     path.resolve(process.cwd(), 'assets/image.gif'),
