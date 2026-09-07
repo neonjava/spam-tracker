@@ -5,6 +5,7 @@ import { MessageTracker } from './services/messageTracker';
 import { ModerationService } from './services/moderationService';
 import { ProtectionService } from './services/protectionService';
 import { LoggingService } from './services/loggingService';
+import { PresenceService } from './services/presenceService';
 import { createErrorEmbed, createTimeoutRemovedDMEmbed } from './utils/embeds';
 
 import { startDashboardServer } from './dashboard/dashboardServer';
@@ -131,6 +132,7 @@ async function main() {
 
   const shutdown = async () => {
     LoggingService.logInfo('Main', 'Shutting down...');
+    PresenceService.stopPresenceInterval();
     messageTracker.destroy();
     await disconnectDatabase();
     client.destroy();

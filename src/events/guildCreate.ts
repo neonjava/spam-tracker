@@ -9,7 +9,7 @@ export const once = false;
 export async function execute(guild: Guild): Promise<void> {
   try {
     LoggingService.logInfo('GuildCreateEvent', `Joined new guild: ${guild.name} (${guild.id})`);
-    PresenceService.updatePresence(guild.client);
+    void PresenceService.updatePresence(guild.client);
 
     let targetChannel = guild.systemChannel;
 
