@@ -18,3 +18,7 @@ Copy `.env.example` to `.env`, set `DISCORD_TOKEN`, `CLIENT_ID`, `DATABASE_URL`,
 ## Security
 
 Keep credentials in local environment files. The example files contain placeholders only. Rotate any credential previously used in a local deployment before publishing or redeploying.
+
+## License
+
+The project code is licensed under AGPL-3.0-only. See [LICENSE](LICENSE).
