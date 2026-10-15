@@ -23,6 +23,7 @@ function loadConfig(): AppConfig {
   if (!discordToken) missing.push('DISCORD_TOKEN');
   if (!clientId) missing.push('CLIENT_ID');
   if (!databaseUrl) missing.push('DATABASE_URL');
+  if (!process.env.ADMIN_PASSWORD) missing.push('ADMIN_PASSWORD');
 
   if (missing.length > 0) {
     throw new Error(
@@ -36,7 +37,7 @@ function loadConfig(): AppConfig {
     clientId: clientId!,
     databaseUrl: databaseUrl!,
     dashboardPort: parseInt(process.env.DASHBOARD_PORT || '3001', 10),
-    adminPassword: process.env.ADMIN_PASSWORD || 'REDACTED_DASHBOARD_PASSWORD',
+    adminPassword: process.env.ADMIN_PASSWORD!,
     topggVoteUrl: process.env.TOPGG_VOTE_URL || undefined,
     discordbotlistVoteUrl: process.env.DISCORDBOTLIST_VOTE_URL || undefined,
     botservicesVoteUrl: process.env.BOTSERVICES_VOTE_URL || undefined,

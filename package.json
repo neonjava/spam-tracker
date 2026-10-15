@@ -1,7 +1,7 @@
 {
   "name": "spam-tracker",
   "version": "1.0.0",
-  "description": "🛡️ Discord moderation bot focused on stopping spam/raid accounts",
+  "description": "Discord moderation bot that uses a honeypot channel to detect and clean up spam",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
